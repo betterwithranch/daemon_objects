@@ -6,6 +6,7 @@ class DaemonObjects::Base
     self.queue    = opts.delete(:queue_name)
     self.arguments["x-message-ttl"] = opts.delete(:ttl) if opts[:ttl]
     self.prefetch = opts.delete(:prefetch)
+    self.worker_class = opts.delete(:worker_class)
 
     logger.info "Configured to consume queue [#{queue}] at endpoint [#{endpoint}]"
   end
@@ -23,8 +24,9 @@ class DaemonObjects::Base
   end
 
   def self.create_logger
-    logger = Logger.new(File.join(log_directory, log_filename))
-    logger.formatter = Logger::Formatter.new
+    FileUtils.mkdir_p log_directory
+    logger = ::Logger.new(File.join(log_directory, log_filename))
+    logger.formatter = ::Logger::Formatter.new
     logger
   end
 

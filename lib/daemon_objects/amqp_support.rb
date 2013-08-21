@@ -1,5 +1,5 @@
 module DaemonObjects::AmqpSupport
-  attr_accessor :endpoint, :queue, :prefetch
+  attr_accessor :endpoint, :queue, :prefetch, :worker_class
 
   def arguments
     @arguments ||= {}
@@ -13,7 +13,7 @@ module DaemonObjects::AmqpSupport
       channel  = AMQP::Channel.new(connection)
       channel.prefetch(1) if prefetch
 
-      worker   = OnlifeMessaging::Worker.new(
+      worker   = worker_class.new(
         channel, 
         get_consumer, 
         {

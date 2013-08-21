@@ -1,5 +1,6 @@
 class DaemonObjects::ConsumerBase
-  include ::NewRelic::Agent::Instrumentation::ControllerInstrumentation
+
+  include ::NewRelic::Agent::Instrumentation::ControllerInstrumentation if defined?(::NewRelic)
 
   class << self 
     attr_accessor :message_handler
@@ -29,5 +30,5 @@ class DaemonObjects::ConsumerBase
     define_method(:handle_message_impl, &block) 
   end
 
-  add_transaction_tracer :handle_message, :category => :task
+  add_transaction_tracer :handle_message, :category => :task if defined?(::NewRelic)
 end
