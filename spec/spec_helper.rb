@@ -5,8 +5,10 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'pry'
-spec_path = File.dirname(__FILE__)
-Dir[File.join(spec_path, "support/**/*.rb")].each{|f| require f}
+SPEC_PATH = File.dirname(__FILE__)
+Dir[File.join(SPEC_PATH, "support/**/*.rb")].each{|f| require f}
+
+FIXTURES_PATH = File.join(SPEC_PATH, "fixtures")
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
