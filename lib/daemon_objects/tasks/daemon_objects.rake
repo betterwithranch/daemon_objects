@@ -11,8 +11,8 @@ namespace :daemon do
         task action => :environment do
 
           #require 'daemon_objects'
-          require File.join(Rails.root, "lib/daemons/#{daemon}/#{daemon}_daemon.rb")
-          require File.join(Rails.root, "lib/daemons/#{daemon}/#{daemon}_consumer.rb")
+          require "#{DaemonObjects.daemon_path}/#{daemon}_daemon.rb"
+          require "#{DaemonObjects.daemon_path}/#{daemon}_consumer.rb"
 
 
           puts "#{description} #{action}"
