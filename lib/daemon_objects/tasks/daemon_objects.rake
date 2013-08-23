@@ -11,6 +11,7 @@ namespace :daemon do
       [:start, :stop, :run].each do |action|
         task action => :environment do
 
+          require "daemon_objects"
           require "#{DaemonObjects.daemon_path}/#{daemon}_daemon.rb"
           require "#{DaemonObjects.daemon_path}/#{daemon}_consumer.rb"
 
