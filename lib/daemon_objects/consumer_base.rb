@@ -23,7 +23,6 @@ class DaemonObjects::ConsumerBase
   rescue StandardError => e
     logger.error("#{e.class}:  #{e.message}")
     logger.error(e.backtrace.join("\n"))
-    binding.pry
     Airbrake.notify(e) if defined?(Airbrake)
   end
 
