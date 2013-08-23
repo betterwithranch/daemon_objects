@@ -7,6 +7,7 @@ module DaemonObjects::AmqpSupport
 
   def run
     logger.info "Preparing to start the AMQP watcher."
+
     AMQP.start(endpoint) do |connection, open_ok|
       logger.info "Starting up the AMQP watcher."
 
@@ -27,7 +28,6 @@ module DaemonObjects::AmqpSupport
         logger.info "Exiting process"
         connection.close { EventMachine.stop } 
       end
-
 
     end
   end

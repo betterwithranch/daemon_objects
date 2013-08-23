@@ -72,6 +72,7 @@ class DaemonObjects::Base
   rescue StandardError => e
     logger.error(e.message)
     logger.error(e.backtrace.join("\n"))
+    Airbrake.notify(e) if defined?(Airbrake)
   end
 
   def self.stop
