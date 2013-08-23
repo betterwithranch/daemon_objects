@@ -1,4 +1,8 @@
 require "daemon_objects/version"
+require 'active_support/core_ext/string'
+require 'daemons'
+require 'amqp'
+require 'logger'
 
 module DaemonObjects 
   ROOT = File.join(File.dirname(__FILE__))
@@ -31,19 +35,10 @@ module DaemonObjects
 
   end
 
-  class Railtie < Rails::Railtie
-    rake_tasks do
-      load File.join(DaemonObjects::ROOT, "daemon_objects/tasks/daemon_objects.rake")
-    end
-  end if defined?(Rails)
 end
 
-require 'active_support/core_ext/string'
-require 'daemons'
-require 'amqp'
-require 'logger'
-
-["base", "consumer_base", "amqp_support"].each do |file|
-  require File.join(DaemonObjects::ROOT, "daemon_objects", "#{file}.rb")
-end
+require 'daemon_objects/base'
+require 'daemon_objects/consumer_base'
+require 'daemon_objects/amqp_support'
+require 'daemon_objects/railtie'
 
