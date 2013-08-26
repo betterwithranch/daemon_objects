@@ -19,6 +19,10 @@ class DaemonObjects::Base
     (defined? Rails) ? File.join(Rails.root, "log") : "log"
   end
 
+  def self.pid_directory
+    (defined? Rails) ? File.join(Rails.root, "tmp") : "."
+  end
+
   def self.logger
     @logger ||= create_logger
   end
@@ -60,8 +64,9 @@ class DaemonObjects::Base
     ActiveRecord::Base.connection.disconnect! if defined?(ActiveRecord::Base)
 
     Daemons.run_proc(proc_name, 
-                    { :ARGV => ["start", "-f"],
-                      :log_dir => "/tmp",
+                    { :ARGV       => ["start", "-f"],
+                      :log_dir    => "/tmp",
+                      :dir        => pid_directory,
                       :log_output => true}) do
       
       # daemonizing closes all file handles, so this will reopen the log
@@ -76,7 +81,7 @@ class DaemonObjects::Base
   end
 
   def self.stop
-    Daemons.run_proc(proc_name, { :ARGV => [ "stop", "-f" ]})
+    Daemons.run_proc(proc_name, { :ARGV => [ "stop", "-f" ], :dir => pid_directory})
   end
 
   def self.restart
