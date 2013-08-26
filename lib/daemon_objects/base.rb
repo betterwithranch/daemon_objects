@@ -20,7 +20,7 @@ class DaemonObjects::Base
   end
 
   def self.pid_directory
-    (defined? Rails) ? File.join(Rails.root, "tmp") : "."
+    (defined? Rails) ? File.join(Rails.root, "tmp/pids") : "."
   end
 
   def self.logger
@@ -62,6 +62,8 @@ class DaemonObjects::Base
   def self.start
     # connection will get severed on fork, so disconnect first
     ActiveRecord::Base.connection.disconnect! if defined?(ActiveRecord::Base)
+
+    FileUtils.mkdir_p(pid_directory)
 
     Daemons.run_proc(proc_name, 
                     { :ARGV       => ["start", "-f"],
