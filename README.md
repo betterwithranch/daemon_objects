@@ -1,5 +1,6 @@
 # DaemonObjects
 [![Build Status](https://travis-ci.org/craigisrael/daemon_objects.png)](https://travis-ci.org/craigisrael/daemon_objects)
+[![Code Climate](https://codeclimate.com/github/craigisrael/daemon_objects.png)](https://codeclimate.com/github/craigisrael/daemon_objects)
 
 Daemon Objects provides an object-oriented approach to managing daemons.  Under the hood, it uses the
 [daemons](http://daemons.rubyforge.org) gem, which is a mature and tested solution.
