@@ -1,4 +1,7 @@
+require 'daemon_objects/logging'
+
 class DaemonObjects::Base
+  extend DaemonObjects::Logging
 
   def self.consumes_amqp(opts={})
     extend DaemonObjects::AmqpSupport
@@ -11,36 +14,8 @@ class DaemonObjects::Base
     logger.info "Configured to consume queue [#{queue}] at endpoint [#{endpoint}]"
   end
 
-  def self.log_filename
-    "#{self.to_s.underscore}.log"
-  end
-
-  def self.log_directory
-    (defined? Rails) ? File.join(Rails.root, "log") : "log"
-  end
-
   def self.pid_directory
     (defined? Rails) ? File.join(Rails.root, "tmp/pids") : "."
-  end
-
-  def self.logger
-    @logger ||= create_logger
-  end
-
-  def self.create_logger
-    FileUtils.mkdir_p log_directory
-    logger = ::Logger.new(File.join(log_directory, log_filename))
-    logger.formatter = ::Logger::Formatter.new
-    logger
-  end
-
-  def self.logger=(value)
-    @logger = value
-  end
-
-  def self.force_logger_reset
-    @logger = nil
-    Rails.logger = logger if defined?(Rails)
   end
 
   def self.consumer_class

@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe DaemonObjects::ConsumerBase do
   describe '#handle_message' do
+    after :each do
+      Object.send(:remove_const, :Harness)
+    end
+
     it 'should call the configured message handler' do
 
       Harness = Class.new(DaemonObjects::ConsumerBase) do

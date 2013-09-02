@@ -2,9 +2,16 @@ require 'spec_helper'
 
 describe DaemonObjects::Base do
   after :each do
-    Object.instance_eval{ remove_const(:MyDaemon)} if defined?(MyDaemon)
-    Object.instance_eval{ remove_const(:ThreePartNameDaemon)} if defined?(ThreePartNameDaemon)
-    Object.instance_eval{ remove_const(:MyConsumer)} if defined?(MyConsumer)
+    [ :MyDaemon, :ThreePartNameDaemon, :MyConsumer].each do |sym|
+      Object.send(:remove_const, sym) if Object.const_defined?(sym)
+    end
+  end
+
+  describe '#extends' do
+    it 'should extend logging' do
+      MyDaemon = Class.new(DaemonObjects::Base)
+      MyDaemon.singleton_class.included_modules.should include(DaemonObjects::Logging)
+    end
   end
 
   describe '#run' do
@@ -46,36 +53,6 @@ describe DaemonObjects::Base do
     end
   end
 
-  describe '##logger' do
-    it 'should create a logger at log/log_filename path' do
-      MyDaemon = Class.new(DaemonObjects::Base)
-      logger = StubLogger.new
-
-      Logger.stub(:new).
-        with("#{MyDaemon.log_directory}/#{MyDaemon.log_filename}").
-        and_return(logger)
-
-      MyDaemon.logger.info("starting consumer")
-
-      logger.logged_output.should =~ /starting consumer\n$/
-    end
-  end
-
-  describe '#create_logger' do
-    it 'should create a logger with timestamp formatting' do
-      MyDaemon = Class.new(DaemonObjects::Base)
-      logger = MyDaemon.logger
-      logger.formatter.class.should == ::Logger::Formatter
-    end
-  end
-
-#  describe '#log_path' do
-#    it 'should use Rails log path when Rails is defined' do
-#        MyDaemon = Class.new(DaemonObjects::Base)
-#        MyDaemon.log_directory.to_s.should == File.join(Rails.root, "log")
-#    end
-#  end
-
   describe '##consumer_class' do
     it 'should constantize a file with multiple part name' do
       ThreePartNameConsumer = Class.new 
@@ -102,7 +79,7 @@ describe DaemonObjects::Base do
     end
 
     after :each do
-      Object.instance_eval{ remove_const(:MyWorker)} if defined?(MyWorker)
+      Object.send( :remove_const, :MyWorker) if defined?(MyWorker)
     end
 
     it 'should start AMQP if daemon is an amqp consumer' do
