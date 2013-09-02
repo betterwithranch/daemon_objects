@@ -28,6 +28,7 @@ describe DaemonObjects::Base do
         with(MyDaemon.proc_name,
              { :ARGV       => ['start', '-f'],
                :log_dir    => "/tmp",
+               :dir        => MyDaemon.pid_directory,
                :log_output => true
               } )
       MyDaemon.start
@@ -39,7 +40,8 @@ describe DaemonObjects::Base do
       MyDaemon = Class.new(DaemonObjects::Base)
       Daemons.should_receive(:run_proc).
         with(MyDaemon.proc_name,
-             { :ARGV => ['stop', '-f'] })
+             { :ARGV => ['stop', '-f'],
+              :dir   => MyDaemon.pid_directory})
       MyDaemon.stop
     end
   end
