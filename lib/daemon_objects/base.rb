@@ -34,6 +34,13 @@ class DaemonObjects::Base
     get_consumer.run
   end
 
+  def self.after_fork
+    # daemonizing closes all file handles, so this will reopen the log
+    force_logger_reset 
+    # this seems to be enough to initialize NewRelic if it's defined
+    defined?(NewRelic)
+  end
+
   def self.start
     # connection will get severed on fork, so disconnect first
     ActiveRecord::Base.connection.disconnect! if defined?(ActiveRecord::Base)
@@ -46,8 +53,7 @@ class DaemonObjects::Base
                       :dir        => pid_directory,
                       :log_output => true}) do
       
-      # daemonizing closes all file handles, so this will reopen the log
-      force_logger_reset 
+      after_fork
       run  
     end
 
