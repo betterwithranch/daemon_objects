@@ -4,7 +4,7 @@ describe DaemonObjects do
   describe '#daemons' do
     it 'should get daemons from daemon_path' do
       DaemonObjects.daemon_path = File.join(FIXTURES_PATH, "daemon_path_spec")
-      DaemonObjects.daemons.should == ["daemon_one", "daemon_two"]
+      DaemonObjects.daemons.sort.should == ["daemon_one", "daemon_two"]
     end
   end
 
