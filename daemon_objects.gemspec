@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["craig@theisraels.net"]
   spec.description   = %q{ A light-weight approach to creating and managing daemons in an object-oriented way. Supports any type of daemon, but provides additional support for consuming AMQP queues. }
   spec.summary       = %q{ Daemon objects provides an object-based interface to daemons}
-  spec.homepage      = "github.com/craigisrael/daemon_objects"
+  spec.homepage      = "http://github.com/craigisrael/daemon_objects"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
