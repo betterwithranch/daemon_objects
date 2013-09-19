@@ -81,8 +81,7 @@ with your daemon, add `supports_amqp` to your daemon class.
 
     class MyQueueProcessingDaemon < Daemon::Base
       supports_amqp :endpoint     => "http://localhost:5672",
-                    :queue_name   => "my_awesome_queue",
-                    :worker_class => MyAmqpWorker
+                    :queue_name   => "my_awesome_queue"
     end
 
 This will add the code to monitor the queue, so all you need now is code to handle the messages.
