@@ -1,6 +1,7 @@
 # DaemonObjects
 [![Build Status](https://travis-ci.org/craigisrael/daemon_objects.png)](https://travis-ci.org/craigisrael/daemon_objects)
 [![Code Climate](https://codeclimate.com/github/craigisrael/daemon_objects.png)](https://codeclimate.com/github/craigisrael/daemon_objects)
+[![Gem Version](https://badge.fury.io/rb/daemon_objects.png)](http://badge.fury.io/rb/daemon_objects)
 
 Daemon Objects is designed to simplify using daemons in your ruby applications.  Under the hood, it uses the
 [daemons](http://daemons.rubyforge.org) gem, which is a mature and tested solution.  But, it adds support for managing via rake tasks,
