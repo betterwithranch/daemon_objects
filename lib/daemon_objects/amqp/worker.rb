@@ -1,5 +1,5 @@
 class DaemonObjects::Amqp::Worker
-  attr_accessor :queue_name, :exchange, :routing_key, :channel, :consumer
+  attr_accessor :queue_name, :exchange, :routing_key, :channel, :consumer, :arguments, :logger
 
   DEFAULTS = {
     :queue_name  => AMQ::Protocol::EMPTY_STRING,
@@ -43,7 +43,7 @@ class DaemonObjects::Amqp::Worker
   end
 
   def handle_channel_exception(channel, channel_close)
-    logger.error "ERROR channel-level exception: code = #{channel_close.reply_code}, message = #{channel_close.reply_text}"
+    raise StandardError, "ERROR channel-level exception: code = #{channel_close.reply_code}, message = #{channel_close.reply_text}"
   end
 
   def handle_message(metadata, payload)

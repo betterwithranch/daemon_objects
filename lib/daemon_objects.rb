@@ -7,8 +7,8 @@ require 'logger'
 module DaemonObjects; end
 
 require 'daemon_objects/loader'
+require 'daemon_objects/amqp'
 require 'daemon_objects/base'
 require 'daemon_objects/consumer_base'
-require 'daemon_objects/amqp_support'
 require 'daemon_objects/railtie'
 

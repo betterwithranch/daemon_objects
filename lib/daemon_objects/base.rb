@@ -9,7 +9,8 @@ class DaemonObjects::Base
     self.queue    = opts.delete(:queue_name)
     self.arguments["x-message-ttl"] = opts.delete(:ttl) if opts[:ttl]
     self.prefetch = opts.delete(:prefetch)
-    self.worker_class = opts.delete(:worker_class)
+    self.worker_class = opts.delete(:worker_class) || DaemonObjects::Amqp::Worker
+    self.arguments.merge!(opts)
 
     logger.info "Configured to consume queue [#{queue}] at endpoint [#{endpoint}]"
   end

@@ -19,16 +19,18 @@ module DaemonObjects::AmqpSupport
         get_consumer, 
         {
           :queue_name => queue,
+          :logger     => logger,
           :arguments  => arguments
         })
 
       worker.start
 
+      logger.info "AMQP worker started"
+
       Signal.trap("INT") do
-        logger.info "Exiting process"
+        logger.info "Received signal 'INT'.  Exiting process"
         connection.close { EventMachine.stop } 
       end
-
     end
   end
 end

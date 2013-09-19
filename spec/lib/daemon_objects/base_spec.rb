@@ -126,6 +126,7 @@ describe DaemonObjects::Base do
       MyWorker.should_receive(:new).
         with(channel, consumer, {
               :queue_name => 'queue',
+              :logger     => MyDaemon.logger,
               :arguments  => {}
         }).
         and_return(worker)
@@ -159,6 +160,7 @@ describe DaemonObjects::Base do
       MyWorker.should_receive(:new).
         with(channel, consumer, {
               :queue_name => 'queue',
+              :logger     => MyDaemon.logger,
               :arguments  => {}
         }).
         and_return(worker)
