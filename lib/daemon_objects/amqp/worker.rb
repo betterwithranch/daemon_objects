@@ -47,10 +47,12 @@ class DaemonObjects::Amqp::Worker
   end
 
   def handle_message(metadata, payload)
-    consumer.handle_message (payload)
+    response = consumer.handle_message (payload)
     metadata.ack
+    response
   rescue Exception => e
     metadata.reject
     logger.error "Error occurred handling message, the payload was: #{payload}, the error was: '#{e}'."
+    e
   end
 end
