@@ -20,10 +20,12 @@ class DaemonObjects::ConsumerBase
     logger.info("Handling message #{payload}")
     handle_message_impl(payload)
     logger.info("Completed handling message")
+    nil
   rescue StandardError => e
     logger.error("#{e.class}:  #{e.message}")
     logger.error(e.backtrace.join("\n"))
     Airbrake.notify(e) if defined?(Airbrake)
+    e
   end
 
   def self.handle_messages_with(&block)

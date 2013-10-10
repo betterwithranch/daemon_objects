@@ -31,7 +31,7 @@ class DaemonObjects::Amqp::Worker
     queue.bind(exchange, :routing_key => routing_key) if exchange
 
     queue.subscribe(:ack => true) do |metadata, payload|
-      handle_message(metadata, payload)
+      exception = handle_message(metadata, payload)
 
       response_payload = consumer.get_response(payload, exception) if consumer.respond_to?(:get_response)
       if response_payload
