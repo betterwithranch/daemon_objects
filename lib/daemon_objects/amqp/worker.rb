@@ -31,7 +31,7 @@ class DaemonObjects::Amqp::Worker
     queue.bind(exchange, :routing_key => routing_key) if exchange
 
     queue.subscribe(:ack => true) do |metadata, payload|
-      handle_message(metadata, payload)
+      exception = handle_message(metadata, payload)
 
       response_payload = consumer.get_response(payload, exception) if consumer.respond_to?(:get_response)
       if response_payload
@@ -47,10 +47,12 @@ class DaemonObjects::Amqp::Worker
   end
 
   def handle_message(metadata, payload)
-    consumer.handle_message (payload)
+    response = consumer.handle_message (payload)
     metadata.ack
+    response
   rescue Exception => e
     metadata.reject
     logger.error "Error occurred handling message, the payload was: #{payload}, the error was: '#{e}'."
+    e
   end
 end
