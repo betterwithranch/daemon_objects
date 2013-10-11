@@ -18,9 +18,9 @@ class DaemonObjects::ConsumerBase
 
   def handle_message(payload)
     logger.info("Handling message #{payload}")
-    handle_message_impl(payload)
+    response = handle_message_impl(payload)
     logger.info("Completed handling message")
-    nil
+    response
   rescue StandardError => e
     logger.error("#{e.class}:  #{e.message}")
     logger.error(e.backtrace.join("\n"))
