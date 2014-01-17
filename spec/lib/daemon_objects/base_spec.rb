@@ -72,9 +72,9 @@ describe DaemonObjects::Base do
     let(:endpoint){ }
 
     before :each do
-      MyWorker = Class.new do
+      MyWorker = Class.new(DaemonObjects::Amqp::Worker) do
         def initialize(*args); end
-        def run; end
+        def start; end
       end
     end
 
@@ -90,7 +90,8 @@ describe DaemonObjects::Base do
                       :worker_class => MyWorker
       end
 
-      AMQP.should_receive(:start).with('amqp://localhost:4567').and_return(true)
+      bunny = double(Bunny).as_null_object
+      Bunny.should_receive(:new).with('amqp:%2F%2Flocalhost:4567').and_return(bunny)
       MyDaemon.run
     end
 
@@ -98,7 +99,7 @@ describe DaemonObjects::Base do
       MyConsumer = Class.new(DaemonObjects::ConsumerBase)
       MyDaemon = Class.new(DaemonObjects::Base)
 
-      AMQP.should_not_receive(:start)
+      Bunny.should_not_receive(:new)
       MyDaemon.run
 
     end
@@ -111,12 +112,10 @@ describe DaemonObjects::Base do
                       :worker_class => MyWorker
       end
 
-      def AMQP.start(endpoint)
-        yield "connection", "open"
-      end
-
-      channel = double(AMQP::Channel)
-      AMQP::Channel.stub(:new).and_return(channel)
+      bunny = double(Bunny).as_null_object
+      Bunny.stub(:new).and_return(bunny)
+      channel = double(Bunny::Channel)
+      bunny.stub(:create_channel).and_return(channel)
       channel.should_not_receive(:prefetch)
 
       worker  = MyWorker.new
@@ -144,14 +143,12 @@ describe DaemonObjects::Base do
                       :worker_class => MyWorker
       end
 
-      def AMQP.start(endpoint)
-        yield "connection", "open"
-      end
-
-      channel = double(AMQP::Channel)
+      bunny = double(Bunny).as_null_object
+      Bunny.stub(:new).and_return(bunny)
+      channel = double(Bunny::Channel)
       channel.should_receive(:prefetch).with(1)
 
-      AMQP::Channel.stub(:new).and_return(channel)
+      bunny.stub(:create_channel).and_return(channel)
 
       worker  = MyWorker.new
       consumer = MyDaemon.get_consumer

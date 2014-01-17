@@ -1,8 +1,8 @@
 require "daemon_objects/version"
 require 'active_support/core_ext/string'
 require 'daemons'
-require 'amqp'
 require 'logger'
+require 'bunny'
 
 module DaemonObjects; end
 

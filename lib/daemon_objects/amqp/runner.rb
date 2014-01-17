@@ -8,29 +8,29 @@ module DaemonObjects::AmqpSupport
   def run
     logger.info "Preparing to start the AMQP watcher."
 
-    AMQP.start(endpoint) do |connection, open_ok|
-      logger.info "Starting up the AMQP watcher."
+    connection = Bunny.new("#{endpoint.gsub("/", "%2F")}") 
+    connection.start
 
-      channel  = AMQP::Channel.new(connection)
-      channel.prefetch(1) if prefetch
+    logger.info "Starting up the AMQP watcher."
 
-      worker   = worker_class.new(
-        channel, 
-        get_consumer, 
-        {
-          :queue_name => queue,
-          :logger     => logger,
-          :arguments  => arguments
-        })
+    channel  = connection.create_channel
+    channel.prefetch(1) if prefetch
 
-      worker.start
+    worker   = worker_class.new(
+      channel, 
+      get_consumer, 
+      {
+        :queue_name => queue,
+        :logger     => logger,
+        :arguments  => arguments
+      })
+    worker.start
 
-      logger.info "AMQP worker started"
+    logger.info "AMQP worker started"
 
-      Signal.trap("INT") do
-        logger.info "Received signal 'INT'.  Exiting process"
-        connection.close { EventMachine.stop } 
-      end
+    Signal.trap("INT") do
+      logger.info "Received signal 'INT'.  Exiting process"
+      connection.close { EventMachine.stop } 
     end
   end
 end
