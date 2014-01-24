@@ -27,17 +27,17 @@ class DaemonObjects::Amqp::Worker
   end
 
   def start
-    queue = channel.queue(queue_name, :durable => true, :ack => true, :arguments => arguments)
+    queue = channel.queue(queue_name, :durable => true, :arguments => arguments)
     queue.bind(exchange, :routing_key => routing_key) if exchange
 
-    queue.subscribe(:ack => true) do |metadata, payload|
-      exception = handle_message(metadata, payload)
+    queue.subscribe(:block => true, :ack => true) do |delivery_info, properties, payload|
+      exception = handle_message(channel, delivery_info.delivery_tag, payload)
 
       response_payload = consumer.get_response(payload, exception) if consumer.respond_to?(:get_response)
       if response_payload
         channel.default_exchange.publish(response_payload.to_json, 
-                                         :routing_key    => metadata.reply_to, 
-                                         :correlation_id => metadata.message_id)
+                                         :routing_key    => delivery_info.routing_key, 
+                                         :correlation_id => properties.message_id)
       end
     end
   end
@@ -46,12 +46,12 @@ class DaemonObjects::Amqp::Worker
     raise StandardError, "ERROR channel-level exception: code = #{channel_close.reply_code}, message = #{channel_close.reply_text}"
   end
 
-  def handle_message(metadata, payload)
+  def handle_message(channel, delivery_tag, payload)
     response = consumer.handle_message (payload)
-    metadata.ack
+    channel.acknowledge(delivery_tag, false)
     response
   rescue Exception => e
-    metadata.reject
+    channel.reject(delivery_tag)
     logger.error "Error occurred handling message, the payload was: #{payload}, the error was: '#{e}'."
     e
   end
