@@ -36,7 +36,7 @@ class DaemonObjects::Amqp::Worker
       response_payload = consumer.get_response(payload, exception) if consumer.respond_to?(:get_response)
       if response_payload
         channel.default_exchange.publish(response_payload.to_json, 
-                                         :routing_key    => delivery_info.routing_key, 
+                                         :routing_key    => properties.reply_to, 
                                          :correlation_id => properties.message_id)
       end
     end
@@ -48,7 +48,7 @@ class DaemonObjects::Amqp::Worker
 
   def handle_message(channel, delivery_tag, payload)
     response = consumer.handle_message (payload)
-    channel.acknowledge(delivery_tag, false)
+    channel.acknowledge(delivery_tag, true)
     response
   rescue Exception => e
     channel.reject(delivery_tag)
