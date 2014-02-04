@@ -13,6 +13,7 @@ class DaemonObjects::Base
     self.arguments.merge!(opts)
 
     logger.info "Configured to consume queue [#{queue}] at endpoint [#{endpoint}]"
+    logger.info "Worker class is '#{worker_class}'"
   end
 
   def self.pid_directory

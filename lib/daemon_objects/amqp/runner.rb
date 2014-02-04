@@ -8,7 +8,7 @@ module DaemonObjects::AmqpSupport
   def run
     logger.info "Preparing to start the AMQP watcher."
 
-    connection = Bunny.new("#{endpoint.gsub("/", "%2F")}") 
+    connection = Bunny.new(endpoint) 
     connection.start
 
     logger.info "Starting up the AMQP watcher."

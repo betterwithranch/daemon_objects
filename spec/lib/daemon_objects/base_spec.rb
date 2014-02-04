@@ -91,7 +91,7 @@ describe DaemonObjects::Base do
       end
 
       bunny = double(Bunny).as_null_object
-      Bunny.should_receive(:new).with('amqp:%2F%2Flocalhost:4567').and_return(bunny)
+      Bunny.should_receive(:new).with('amqp://localhost:4567').and_return(bunny)
       MyDaemon.run
     end
 
