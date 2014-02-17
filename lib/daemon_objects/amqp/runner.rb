@@ -45,9 +45,12 @@ module DaemonObjects::AmqpSupport
   end
 
   def wait
+    retry_message = "* Retrying connection in #{retry_wait_time} seconds .... *"
     sleep(retry_wait_time)
-    logger.info("*" * 20)
-    logger.info("Retrying connection ....")
-    logger.info("*" * 20)
+    logger.info("\n")
+    logger.info("*" * retry_message.length)
+    logger.info(retry_message)
+    logger.info("*" * retry_message.length)
+    logger.info("\n")
   end
 end
