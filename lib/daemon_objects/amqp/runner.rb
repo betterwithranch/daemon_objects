@@ -16,6 +16,12 @@ module DaemonObjects::AmqpSupport
     connection = Bunny.new(endpoint) 
     connection.start
 
+    Signal.trap("INT") do
+      logger.info "Received signal 'INT'.  Exiting process"
+      connection.close { EventMachine.stop } 
+      exit
+    end
+
     logger.info "Starting up the AMQP watcher."
 
     channel  = connection.create_channel
@@ -32,11 +38,6 @@ module DaemonObjects::AmqpSupport
     worker.start
 
     logger.info "AMQP worker started"
-
-    Signal.trap("INT") do
-      logger.info "Received signal 'INT'.  Exiting process"
-      connection.close { EventMachine.stop } 
-    end
 
   rescue Bunny::InternalError, Bunny::TCPConnectionFailed => e
     logger.error(e) && e.backtrace.join("\n")
