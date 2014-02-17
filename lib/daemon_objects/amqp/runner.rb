@@ -1,8 +1,13 @@
 module DaemonObjects::AmqpSupport
-  attr_accessor :endpoint, :queue, :prefetch, :worker_class
+  attr_accessor :endpoint, :queue, :prefetch, :worker_class,
+    :retry_wait_time
 
   def arguments
     @arguments ||= {}
+  end
+
+  def retry_wait_time
+    @retry_wait_time || 5
   end
 
   def run
@@ -32,5 +37,16 @@ module DaemonObjects::AmqpSupport
       logger.info "Received signal 'INT'.  Exiting process"
       connection.close { EventMachine.stop } 
     end
+
+  rescue Bunny::InternalError, Bunny::TCPConnectionFailed => e
+    logger.error(e) && e.backtrace.join("\n")
+    wait && retry
+  end
+
+  def wait
+    sleep(retry_wait_time)
+    logger.info("*" * 20)
+    logger.info("Retrying connection ....")
+    logger.info("*" * 20)
   end
 end

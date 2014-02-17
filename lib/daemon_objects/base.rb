@@ -5,11 +5,12 @@ class DaemonObjects::Base
 
   def self.consumes_amqp(opts={})
     extend DaemonObjects::AmqpSupport
-    self.endpoint = opts.delete(:endpoint)
-    self.queue    = opts.delete(:queue_name)
+    self.endpoint                   = opts.delete(:endpoint)
+    self.queue                      = opts.delete(:queue_name)
     self.arguments["x-message-ttl"] = opts.delete(:ttl) if opts[:ttl]
-    self.prefetch = opts.delete(:prefetch)
-    self.worker_class = opts.delete(:worker_class) || DaemonObjects::Amqp::Worker
+    self.prefetch                   = opts.delete(:prefetch)
+    self.retry_wait_time            = opts.delete(:retry_wait_time)
+    self.worker_class               = opts.delete(:worker_class) || DaemonObjects::Amqp::Worker
     self.arguments.merge!(opts)
 
     logger.info "Configured to consume queue [#{queue}] at endpoint [#{endpoint}]"
