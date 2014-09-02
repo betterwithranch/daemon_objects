@@ -55,7 +55,7 @@ describe DaemonObjects::Base do
 
   describe '##consumer_class' do
     it 'should constantize a file with multiple part name' do
-      ThreePartNameConsumer = Class.new 
+      ThreePartNameConsumer = Class.new
       ThreePartNameDaemon = Class.new(DaemonObjects::Base)
       ThreePartNameDaemon.consumer_class.should == ThreePartNameConsumer
     end
@@ -66,6 +66,23 @@ describe DaemonObjects::Base do
       ThreePartNameDaemon = Class.new(DaemonObjects::Base)
       ThreePartNameDaemon.proc_name.should == "three_part_name_daemon"
     end
+  end
+
+  describe '##get_consumer' do
+
+    it 'should log exceptions during consumer instantiation' do
+      TestConsumer = Class.new(DaemonObjects::ConsumerBase) do
+        def initialize(logger)
+          super
+          raise StandardError.new("Test")
+        end
+      end
+      TestDaemon = Class.new(DaemonObjects::Base)
+
+      TestDaemon.logger.should_receive(:error).exactly(4).times
+      expect {TestDaemon.get_consumer}.to raise_error(StandardError)
+    end
+
   end
 
   describe 'AMQP support' do
