@@ -77,10 +77,12 @@ describe DaemonObjects::Base do
           raise StandardError.new("Test")
         end
       end
-      TestDaemon = Class.new(DaemonObjects::Base)
+      TestDaemon = Class.new(DaemonObjects::Base) do
+        self.logger = StubLogger.new
+      end
 
-      TestDaemon.logger.should_receive(:error).exactly(4).times
       expect {TestDaemon.get_consumer}.to raise_error(StandardError)
+      TestDaemon.logger.logged_output =~ /Message: Test/
     end
 
   end
