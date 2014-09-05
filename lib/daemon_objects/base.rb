@@ -31,6 +31,13 @@ class DaemonObjects::Base
 
   def self.get_consumer
     consumer_class.new(logger)
+  rescue Exception => e
+    logger.error("An exception occured while instantiating the consumer #{consumer_class}.  Startup will be aborted.")
+    logger.error("Error: #{e.class}")
+    logger.error("Message: #{e.message}")
+    logger.error(e.backtrace.join("\n"))
+    Airbrake.notify(e) if defined?(Airbrake)
+    raise e
   end
 
   def self.run
@@ -39,7 +46,7 @@ class DaemonObjects::Base
 
   def self.after_fork
     # daemonizing closes all file handles, so this will reopen the log
-    force_logger_reset 
+    force_logger_reset
     # this seems to be enough to initialize NewRelic if it's defined
     defined?(NewRelic)
   end
@@ -50,14 +57,14 @@ class DaemonObjects::Base
 
     FileUtils.mkdir_p(pid_directory)
 
-    Daemons.run_proc(proc_name, 
+    Daemons.run_proc(proc_name,
                     { :ARGV       => ["start", "-f"],
                       :log_dir    => "/tmp",
                       :dir        => pid_directory,
                       :log_output => true}) do
-      
+
       after_fork
-      run  
+      run
     end
 
   rescue StandardError => e
