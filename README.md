@@ -5,10 +5,10 @@
 
 Daemon Objects is designed to simplify using daemons in your ruby applications.  Under the hood, it uses the
 [daemons](http://daemons.rubyforge.org) gem, which is a mature and tested solution.  But, it adds support for managing via rake tasks,
-error handling and instrumentation.  
+error handling and instrumentation.
 
-The [daemons](http://daemons.rubyforge.org) gem also is intended to be used to daemonize a ruby script.  DaemonObjects provides an 
-object-oriented framework for developing daemons.  This allows the application developer to focus on the specific behavior of the daemon 
+The [daemons](http://daemons.rubyforge.org) gem also is intended to be used to daemonize a ruby script.  DaemonObjects provides an
+object-oriented framework for developing daemons.  This allows the application developer to focus on the specific behavior of the daemon
 instead of the infrastructure of daemon management.
 
 ## Installation
@@ -27,7 +27,7 @@ Or install it yourself as:
 
 ## Usage
 
-DaemonObjects will create daemons based on a simple convention.  It will search a directory for files name \*Daemon.rb.  These typically 
+DaemonObjects will create daemons based on a simple convention.  It will search a directory for files name \*Daemon.rb.  These typically
 will just inherit from the base Daemon class.
 
     class MyDaemon < DaemonObjects::Base; end
@@ -37,7 +37,7 @@ This provides the basic daemon control methods (start, stop, run and restart) to
 To add behavior to your daemon, you will need a consumer.  DaemonObjects will load the consumer using the name of the daemon and
 will search in the same directory for it.  For example, if your daemon is name MyDaemon, the consumer should be named MyConsumer.
 
-A consumer needs to inherit from the consumer base and implement run.  For example, 
+A consumer needs to inherit from the consumer base and implement run.  For example,
 
     class MyConsumer < DaemonObjects::ConsumerBase
 
@@ -74,22 +74,19 @@ Four commands are supported
 
 ### Amqp Support
 
-_in beta_
+DaemonObjects also has support for monitoring amqp queues.  This is done with the bunny gem.  To support this with your daemon, add `consumes_amqp` to your daemon class, one pair of daemon/consumer classes per queue you wish to support.  Queues are constructed as 'durable' by default.
 
-DaemonObjects also has support for monitoring an amqp queue.  This is done with the amqp gem.  To support this
-with your daemon, add `supports_amqp` to your daemon class.
-
-    class MyQueueProcessingDaemon < Daemon::Base
-      supports_amqp :endpoint     => "http://localhost:5672",
+    class MyQueueProcessingDaemon < DaemonObjects::Base
+      consumes_amqp :endpoint     => "http://localhost:5672",
                     :queue_name   => "my_awesome_queue"
     end
 
 This will add the code to monitor the queue, so all you need now is code to handle the messages.
 
-    class MyQueueProcessingConsumer < Daemon::ConsumerBase
+    class MyQueueProcessingConsumer < DaemonObjects::ConsumerBase
 
       handle_messages_with do |payload|
-        puts "payload"
+        puts payload
       end
 
     end
