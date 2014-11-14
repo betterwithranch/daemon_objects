@@ -15,7 +15,6 @@ namespace :daemon do
           require "#{DaemonObjects.daemon_path}/#{daemon}_daemon.rb"
           require "#{DaemonObjects.daemon_path}/#{daemon}_consumer.rb"
 
-
           puts "#{description} #{action}"
           daemon_class = "#{daemon}_daemon".camelcase.constantize
           daemon_class.send(action)

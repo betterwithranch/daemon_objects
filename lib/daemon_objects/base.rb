@@ -18,7 +18,7 @@ class DaemonObjects::Base
   end
 
   def self.pid_directory
-    (defined? Rails) ? File.join(Rails.root, "tmp/pids") : "."
+    (defined? Rails) ? File.join(Rails.root, "tmp/pids") : "tmp/pids"
   end
 
   def self.consumer_class
