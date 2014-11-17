@@ -9,7 +9,9 @@ namespace :daemon do
         "or use run to run the daemon in the foreground"
 
       [:start, :stop, :run].each do |action|
-        task action => :environment do
+        task action do
+          require 'pry';binding.pry
+          Rake::Task[:environment].invoke if Rake::Task.task_defined?(:environment)
 
           require "daemon_objects"
           require "#{DaemonObjects.daemon_path}/#{daemon}_daemon.rb"
@@ -21,7 +23,7 @@ namespace :daemon do
         end
       end
 
-      task :restart => [:environment, :stop, :start]
+      task :restart => [:stop, :start]
     end
   end
 
