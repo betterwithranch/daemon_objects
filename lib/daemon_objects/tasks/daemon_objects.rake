@@ -10,7 +10,6 @@ namespace :daemon do
 
       [:start, :stop, :run].each do |action|
         task action do
-          require 'pry';binding.pry
           Rake::Task[:environment].invoke if Rake::Task.task_defined?(:environment)
 
           require "daemon_objects"

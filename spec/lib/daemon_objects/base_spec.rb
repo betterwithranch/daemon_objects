@@ -153,7 +153,7 @@ describe DaemonObjects::Base do
         end
       end
       TestDaemon = Class.new(DaemonObjects::Base) do
-        self.logger = StubLogger.new
+        self.logger = MemoryLogger::Logger.new
       end
 
       expect {TestDaemon.get_consumer}.to raise_error(StandardError)
