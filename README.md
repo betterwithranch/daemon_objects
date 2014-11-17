@@ -50,6 +50,25 @@ A consumer needs to inherit from the consumer base and implement run.  For examp
 
     end
 
+### Environment
+
+You can pass an environment argument to the consumer in two ways.  If the project is
+using Rails, it will automatically use `Rails.env`.  Otherwise, you can use the
+`DAEMON_ENV` environment variable.
+
+### Application directory
+
+Application directory can be set a number of ways.  If the project is using Rails, the
+application directory is `Rails.root`.  If the task was started with Rake, it will be
+`Rake.original_dir`.  You can also override this value by defining an `app_directory`
+method in the `DaemonBase` subclass.
+
+    class MyDaemon < DaemonObjects::Base
+      def app_directory
+        "/some/other/directory"
+      end
+    end
+
 ### Rake tasks
 
 Once you have defined the daemon, you can control it with rake tasks. To access the rake tasks,
@@ -95,6 +114,8 @@ This will add the code to monitor the queue, so all you need now is code to hand
 
 DaemonObjects will create a new log file for your daemon using the pattern _daemon\_file\_name_\_daemon.log.  In a rails project,
 this will be created in the log directory of your application.
+
+If the daemon does not have access to create the log, it will log errors to /tmp/_daemon_name_.output.
 
 ### Support for third-party libraries
 
