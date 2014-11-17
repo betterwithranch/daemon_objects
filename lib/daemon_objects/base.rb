@@ -22,7 +22,7 @@ class DaemonObjects::Base
   end
 
   def self.environment
-    @environment ||= (defined? Rails) ? Rails.env : ENV["DAEMON_ENV"]
+    @environment ||= (defined? Rails) ? Rails.env : (ENV["DAEMON_ENV"] || "development")
   end
 
   def self.pid_directory

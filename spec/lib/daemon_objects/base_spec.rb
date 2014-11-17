@@ -75,9 +75,9 @@ describe DaemonObjects::Base do
       end
     end
 
-    it 'should be nil if not Rails and no environment set' do
+    it 'should be development if not Rails and no environment set' do
       MyDaemon = Class.new(DaemonObjects::Base)
-      MyDaemon.environment.should be_nil
+      MyDaemon.environment.should == "development"
     end
   end
 
