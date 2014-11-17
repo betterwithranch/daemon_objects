@@ -39,13 +39,6 @@ class DaemonObjects::Base
 
   def self.get_consumer
     consumer_class.new(:logger => logger, :app_directory => app_directory, :environment => environment)
-  rescue Exception => e
-    logger.error("An exception occured while instantiating the consumer #{consumer_class}.  Startup will be aborted.")
-    logger.error("Error: #{e.class}")
-    logger.error("Message: #{e.message}")
-    logger.error(e.backtrace.join("\n"))
-    Airbrake.notify(e) if defined?(Airbrake)
-    raise e
   end
 
   def self.run
