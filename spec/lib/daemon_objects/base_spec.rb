@@ -7,6 +7,41 @@ describe DaemonObjects::Base do
     end
   end
 
+  describe '#app_directory' do
+    it 'should be Rake.original_directory if Rails is not defined' do
+      Rake.stub(:original_dir).and_return("/mydir")
+      MyDaemon = Class.new(DaemonObjects::Base)
+      MyDaemon.app_directory.should == Rake.original_dir
+    end
+
+    context 'Rails' do
+      before :each do
+        Rails = Module.new do
+          def self.root
+            "/mydir"
+          end
+        end
+      end
+
+      after :each do
+        Object.send(:remove_const, :Rails)
+      end
+
+      it 'should be Rails.root is Rails is defined' do
+        MyDaemon = Class.new(DaemonObjects::Base)
+        MyDaemon.app_directory.should == Rails.root
+      end
+    end
+
+    it 'should allow app_directory to be set explicitly' do
+      MyDaemon = Class.new(DaemonObjects::Base) do
+        def app_directory
+          "."
+        end
+      end
+    end
+  end
+
   describe '#extends' do
     it 'should extend logging' do
       MyDaemon = Class.new(DaemonObjects::Base)

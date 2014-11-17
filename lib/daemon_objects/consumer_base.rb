@@ -6,10 +6,11 @@ class DaemonObjects::ConsumerBase
     attr_accessor :message_handler
   end
 
-  attr_accessor :logger
+  attr_reader :logger, :app_directory
 
-  def initialize(logger)
-    @logger = logger
+  def initialize(opts)
+    @logger        = opts[:logger]
+    @app_directory = opts[:app_directory]
   end
 
   def run

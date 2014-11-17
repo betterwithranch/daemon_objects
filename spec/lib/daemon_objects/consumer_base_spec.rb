@@ -16,10 +16,25 @@ describe DaemonObjects::ConsumerBase do
         handle_messages_with{|p| payloads_received << p }
       end
 
-      h = Harness.new(StubLogger.new)
+      h = Harness.new(:logger => StubLogger.new)
       h.handle_message({:x => 1})
 
       h.payloads_received.should == [{:x => 1}]
+    end
+  end
+
+  describe '#initialize' do
+    let(:logger) { StubLogger.new }
+    let(:harness) { Class.new(DaemonObjects::ConsumerBase) }
+
+    it 'should set logger' do
+      h = harness.new(:logger => logger)
+      h.logger.should == logger
+    end
+
+    it 'should set app_directory' do
+      h = harness.new(:app_directory => 'app_dir')
+      h.app_directory.should == 'app_dir'
     end
   end
     

@@ -5,7 +5,7 @@ module DaemonObjects::Logging
   end
 
   def log_directory
-    (defined? Rails) ? File.join(Rails.root, "log") : "log"
+    File.join(app_directory, "log")
   end
 
   def logger

@@ -22,4 +22,5 @@ RSpec.configure do |config|
   config.order = 'random'
 end
 
+require 'rake'
 require File.join(File.dirname(__FILE__), "../lib/daemon_objects.rb")

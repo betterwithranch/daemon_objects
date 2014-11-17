@@ -4,6 +4,10 @@ describe DaemonObjects::Logging do
   let(:harness) do
     Class.new do
       extend DaemonObjects::Logging
+
+      def self.app_directory
+        "."
+      end
     end
   end
 
@@ -46,29 +50,8 @@ describe DaemonObjects::Logging do
 
   describe '#log_directory' do
     it "should use 'log' for default log path" do
-      harness.log_directory.to_s.should == "log"
+      harness.log_directory.to_s.should == File.join(harness.app_directory, "log")
     end
-
-    context 'with rails' do
-      before :each do
-        unless defined?(Rails)
-          module Rails
-            def self.root
-              "/root"
-            end
-          end
-        end
-      end
-
-      after :each do
-        Object.send(:remove_const, :Rails)
-      end
-
-      it 'should use Rails log path when Rails is defined' do
-        harness.log_directory.to_s.should == File.join(Rails.root, "log")
-      end
-    end
-
   end
 
 

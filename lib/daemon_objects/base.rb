@@ -17,8 +17,12 @@ class DaemonObjects::Base
     logger.info "Worker class is '#{worker_class}'"
   end
 
+  def self.app_directory
+    @app_directory ||= (defined? Rails) ? Rails.root : Rake.original_dir
+  end
+
   def self.pid_directory
-    (defined? Rails) ? File.join(Rails.root, "tmp/pids") : "tmp/pids"
+    File.join(app_directory, "tmp/pids")
   end
 
   def self.consumer_class
