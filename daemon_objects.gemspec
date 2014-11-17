@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "pry-nav"
+  spec.add_development_dependency "memory_logger", "~> 0.0.3"
 end

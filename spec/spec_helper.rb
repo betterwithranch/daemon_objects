@@ -5,6 +5,8 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'pry'
+require 'memory_logger'
+
 SPEC_PATH = File.dirname(__FILE__)
 Dir[File.join(SPEC_PATH, "support/**/*.rb")].each{|f| require f}
 

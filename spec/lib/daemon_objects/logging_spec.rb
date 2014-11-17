@@ -13,7 +13,7 @@ describe DaemonObjects::Logging do
 
   describe '#logger' do
     it 'should create a logger at log/log_filename path' do
-      logger = StubLogger.new
+      logger = MemoryLogger::Logger.new
 
       Logger.stub(:new).
         with("#{harness.log_directory}/#{harness.log_filename}").
@@ -21,7 +21,7 @@ describe DaemonObjects::Logging do
 
       harness.logger.info("starting consumer")
 
-      logger.logged_output.should =~ /starting consumer\n$/
+      logger.logged_output.should =~ /starting consumer/
     end
   end
 

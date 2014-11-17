@@ -42,6 +42,45 @@ describe DaemonObjects::Base do
     end
   end
 
+  describe '#environment' do
+    context 'Rails' do
+      before :each do
+        Rails = Module.new do
+          def self.env
+            "railsenv"
+          end
+        end
+      end
+
+      after :each do
+        Object.send(:remove_const, :Rails)
+      end
+
+      it 'should use Rails.env if Rails is defined' do
+        MyDaemon = Class.new(DaemonObjects::Base)
+        MyDaemon.environment.should == Rails.env
+      end
+    end
+
+    context 'Env variable set' do
+      before :each do
+        ENV["DAEMON_ENV"] = "daemonenv"
+      end
+      after :each do
+        ENV["DAEMON_ENV"] = nil
+      end
+      it 'should use environment variable if Rails is not defined' do
+        MyDaemon = Class.new(DaemonObjects::Base)
+        MyDaemon.environment.should == ENV["DAEMON_ENV"]
+      end
+    end
+
+    it 'should be nil if not Rails and no environment set' do
+      MyDaemon = Class.new(DaemonObjects::Base)
+      MyDaemon.environment.should be_nil
+    end
+  end
+
   describe '#extends' do
     it 'should extend logging' do
       MyDaemon = Class.new(DaemonObjects::Base)
@@ -54,11 +93,11 @@ describe DaemonObjects::Base do
       MyConsumer = Class.new(DaemonObjects::ConsumerBase)
 
       MyDaemon = Class.new(DaemonObjects::Base) do
-        self.logger = StubLogger.new
+        self.logger = MemoryLogger::Logger.new
       end
 
       MyDaemon.run
-      MyDaemon.logger.logged_output.should =~ /Starting consumer\n/
+      MyDaemon.logger.logged_output.should =~ /Starting consumer/
     end
 
   end
@@ -105,6 +144,7 @@ describe DaemonObjects::Base do
 
   describe '##get_consumer' do
 
+
     it 'should log exceptions during consumer instantiation' do
       TestConsumer = Class.new(DaemonObjects::ConsumerBase) do
         def initialize(logger)
@@ -120,6 +160,40 @@ describe DaemonObjects::Base do
       TestDaemon.logger.logged_output =~ /Message: Test/
     end
 
+    let(:consumer) { MyDaemon.get_consumer }
+
+    before :each do
+      MyConsumer = Class.new(DaemonObjects::ConsumerBase)
+      MyDaemon = Class.new(DaemonObjects::Base)
+    end
+
+    after :each do
+      Object.send(:remove_const, :MyDaemon)
+      Object.send(:remove_const, :MyConsumer)
+    end
+
+    it 'should set environment' do
+      def MyDaemon.environment
+        "theenv"
+      end
+
+      consumer.environment.should == "theenv"
+    end
+
+    it 'should set app directory' do
+      def MyDaemon.app_directory
+        "thedir"
+      end
+
+      consumer.app_directory.should == "thedir"
+    end
+
+    it 'should set logger' do
+      logger = MemoryLogger::Logger.new
+      MyDaemon.stub(:logger).and_return(logger)
+
+      consumer.logger.should == logger
+    end
   end
 
   describe 'AMQP support' do
