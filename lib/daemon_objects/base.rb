@@ -49,7 +49,11 @@ class DaemonObjects::Base
   end
 
   def self.run
-    get_consumer.run
+    begin
+      get_consumer.run
+    rescue StandardError => e
+      handle_error(e)
+    end
   end
 
   def self.after_fork
@@ -76,9 +80,7 @@ class DaemonObjects::Base
     end
 
   rescue StandardError => e
-    logger.error(e.message)
-    logger.error(e.backtrace.join("\n"))
-    Airbrake.notify(e) if defined?(Airbrake)
+    handle_error(e)
   end
 
   def self.stop
@@ -90,4 +92,9 @@ class DaemonObjects::Base
     stop
   end
 
+  def self.handle_error(e)
+    logger.error(e.message)
+    logger.error(e.backtrace.join("\n"))
+    Airbrake.notify(e) if defined?(Airbrake)
+  end
 end
