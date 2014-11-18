@@ -1,3 +1,4 @@
+require_relative 'loader'
 namespace :daemon do
 
   # create tasks for each daemon to start/stop/restart/run
@@ -9,12 +10,13 @@ namespace :daemon do
         "or use run to run the daemon in the foreground"
 
 
-      task :environment do
+      task :daemon_environment do
+        Rake::Task[:environment].invoke if Rake::Task.task_defined?(:environment)
         DaemonObjects.initialize_environment
-      end unless Rake::Task.task_defined?(:environment)
+      end
 
       [:start, :stop, :run].each do |action|
-        task action do
+        task action => [:daemon_environment]  do
           require "daemon_objects"
           require "#{DaemonObjects.daemon_path}/#{daemon}_daemon.rb"
           require "#{DaemonObjects.daemon_path}/#{daemon}_consumer.rb"
