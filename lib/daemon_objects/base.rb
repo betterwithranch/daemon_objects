@@ -21,10 +21,6 @@ class DaemonObjects::Base
     @app_directory ||= (defined? Rails) ? Rails.root : Rake.original_dir
   end
 
-  def self.environment
-    @environment ||= (defined? Rails) ? Rails.env : (ENV["DAEMON_ENV"] || "development")
-  end
-
   def self.pid_directory
     File.join(app_directory, "tmp/pids")
   end
@@ -38,7 +34,9 @@ class DaemonObjects::Base
   end
 
   def self.get_consumer
-    consumer_class.new(:logger => logger, :app_directory => app_directory, :environment => environment)
+    consumer_class.new(:logger        => logger,
+                       :app_directory => app_directory,
+                       :environment   => DaemonObjects.environment)
   end
 
   def self.run

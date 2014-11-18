@@ -42,45 +42,6 @@ describe DaemonObjects::Base do
     end
   end
 
-  describe '#environment' do
-    context 'Rails' do
-      before :each do
-        Rails = Module.new do
-          def self.env
-            "railsenv"
-          end
-        end
-      end
-
-      after :each do
-        Object.send(:remove_const, :Rails)
-      end
-
-      it 'should use Rails.env if Rails is defined' do
-        MyDaemon = Class.new(DaemonObjects::Base)
-        MyDaemon.environment.should == Rails.env
-      end
-    end
-
-    context 'Env variable set' do
-      before :each do
-        ENV["DAEMON_ENV"] = "daemonenv"
-      end
-      after :each do
-        ENV["DAEMON_ENV"] = nil
-      end
-      it 'should use environment variable if Rails is not defined' do
-        MyDaemon = Class.new(DaemonObjects::Base)
-        MyDaemon.environment.should == ENV["DAEMON_ENV"]
-      end
-    end
-
-    it 'should be development if not Rails and no environment set' do
-      MyDaemon = Class.new(DaemonObjects::Base)
-      MyDaemon.environment.should == "development"
-    end
-  end
-
   describe '#extends' do
     it 'should extend logging' do
       MyDaemon = Class.new(DaemonObjects::Base)
@@ -173,10 +134,7 @@ describe DaemonObjects::Base do
     end
 
     it 'should set environment' do
-      def MyDaemon.environment
-        "theenv"
-      end
-
+      DaemonObjects.environment = "theenv"
       consumer.environment.should == "theenv"
     end
 

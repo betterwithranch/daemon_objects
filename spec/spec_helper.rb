@@ -26,3 +26,4 @@ end
 
 require 'rake'
 require File.join(File.dirname(__FILE__), "../lib/daemon_objects.rb")
+DaemonObjects.initialize_environment

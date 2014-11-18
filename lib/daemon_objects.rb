@@ -4,7 +4,15 @@ require 'daemons'
 require 'logger'
 require 'bunny'
 
-module DaemonObjects; end
+module DaemonObjects;
+  class << self
+    attr_accessor :environment
+
+    def initialize_environment
+      @environment = (defined? Rails) ? Rails.env : (ENV["DAEMON_ENV"] || "development")
+    end
+  end
+end
 
 require 'daemon_objects/loader'
 require 'daemon_objects/amqp'

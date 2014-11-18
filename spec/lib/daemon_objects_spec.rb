@@ -14,4 +14,46 @@ describe DaemonObjects do
       DaemonObjects.get_daemon_name(path).should == "daemon_one"
     end
   end
+
+  describe '#environment' do
+    before :each do
+      DaemonObjects.initialize_environment
+    end
+
+    context 'Rails' do
+      before :each do
+        Rails = Module.new do
+          def self.env
+            "railsenv"
+          end
+        end
+        DaemonObjects.initialize_environment
+      end
+
+      after :each do
+        Object.send(:remove_const, :Rails)
+      end
+
+      it 'should use Rails.env if Rails is defined' do
+        DaemonObjects.environment.should == Rails.env
+      end
+    end
+
+    context 'Env variable set' do
+      before :each do
+        ENV["DAEMON_ENV"] = "daemonenv"
+        DaemonObjects.initialize_environment
+      end
+      after :each do
+        ENV["DAEMON_ENV"] = nil
+      end
+      it 'should use environment variable if Rails is not defined' do
+        DaemonObjects.environment.should == ENV["DAEMON_ENV"]
+      end
+    end
+
+    it 'should be development if not Rails and no environment set' do
+      DaemonObjects.environment.should == "development"
+    end
+  end
 end

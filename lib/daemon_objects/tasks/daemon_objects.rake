@@ -8,10 +8,13 @@ namespace :daemon do
       desc "starts the #{description}; can substitute stop or restart for start, " +
         "or use run to run the daemon in the foreground"
 
+
+      task :environment do
+        DaemonObjects.initialize_environment
+      end unless Rake::Task.task_defined?(:environment)
+
       [:start, :stop, :run].each do |action|
         task action do
-          Rake::Task[:environment].invoke if Rake::Task.task_defined?(:environment)
-
           require "daemon_objects"
           require "#{DaemonObjects.daemon_path}/#{daemon}_daemon.rb"
           require "#{DaemonObjects.daemon_path}/#{daemon}_consumer.rb"
