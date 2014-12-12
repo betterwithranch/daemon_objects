@@ -15,20 +15,20 @@ describe DaemonObjects::Logging do
     it 'should create a logger at log/log_filename path' do
       logger = MemoryLogger::Logger.new
 
-      Logger.stub(:new).
+      allow(Logger).to receive(:new).
         with("#{harness.log_directory}/#{harness.log_filename}").
         and_return(logger)
 
       harness.logger.info("starting consumer")
 
-      logger.logged_output.should =~ /starting consumer/
+      expect(logger.logged_output).to match(/starting consumer/)
     end
   end
 
   describe '#create_logger' do
     it 'should create a logger with timestamp formatting' do
       logger = harness.logger
-      logger.formatter.class.should == ::Logger::Formatter
+      expect(logger.formatter.class).to eq(::Logger::Formatter)
     end
   end
 
@@ -44,13 +44,13 @@ describe DaemonObjects::Logging do
     end
 
     it 'should underscore name for log file' do
-      MyDaemon.log_filename.should == "my_daemon.log"
+      expect(MyDaemon.log_filename).to eq("my_daemon.log")
     end
   end
 
   describe '#log_directory' do
     it "should use 'log' for default log path" do
-      harness.log_directory.to_s.should == File.join(harness.app_directory, "log")
+      expect(harness.log_directory.to_s).to eq(File.join(harness.app_directory, "log"))
     end
   end
 

@@ -9,9 +9,9 @@ describe DaemonObjects::Base do
 
   describe '#app_directory' do
     it 'should be Rake.original_directory if Rails is not defined' do
-      Rake.stub(:original_dir).and_return("/mydir")
+      allow(Rake).to receive(:original_dir).and_return("/mydir")
       MyDaemon = Class.new(DaemonObjects::Base)
-      MyDaemon.app_directory.should == Rake.original_dir
+      expect(MyDaemon.app_directory).to eq(Rake.original_dir)
     end
 
     context 'Rails' do
@@ -29,7 +29,7 @@ describe DaemonObjects::Base do
 
       it 'should be Rails.root is Rails is defined' do
         MyDaemon = Class.new(DaemonObjects::Base)
-        MyDaemon.app_directory.should == Rails.root
+        expect(MyDaemon.app_directory).to eq(Rails.root)
       end
     end
 
@@ -45,7 +45,7 @@ describe DaemonObjects::Base do
   describe '#extends' do
     it 'should extend logging' do
       MyDaemon = Class.new(DaemonObjects::Base)
-      MyDaemon.singleton_class.included_modules.should include(DaemonObjects::Logging)
+      expect(MyDaemon.singleton_class.included_modules).to include(DaemonObjects::Logging)
     end
   end
 
@@ -58,7 +58,7 @@ describe DaemonObjects::Base do
       end
 
       MyDaemon.run
-      MyDaemon.logger.logged_output.should =~ /Starting consumer/
+      expect(MyDaemon.logger.logged_output).to match(/Starting consumer/)
     end
 
   end
@@ -66,7 +66,7 @@ describe DaemonObjects::Base do
   describe '#start' do
     it 'should call daemon run_proc' do
       MyDaemon = Class.new(DaemonObjects::Base)
-      Daemons.should_receive(:run_proc).
+      expect(Daemons).to receive(:run_proc).
         with(MyDaemon.proc_name,
              { :ARGV       => ['start', '-f'],
                :log_dir    => "/tmp",
@@ -80,7 +80,7 @@ describe DaemonObjects::Base do
   describe '#stop' do
     it 'should call daemon stop_proc' do
       MyDaemon = Class.new(DaemonObjects::Base)
-      Daemons.should_receive(:run_proc).
+      expect(Daemons).to receive(:run_proc).
         with(MyDaemon.proc_name,
              { :ARGV => ['stop', '-f'],
               :dir   => MyDaemon.pid_directory})
@@ -92,14 +92,14 @@ describe DaemonObjects::Base do
     it 'should constantize a file with multiple part name' do
       ThreePartNameConsumer = Class.new
       ThreePartNameDaemon = Class.new(DaemonObjects::Base)
-      ThreePartNameDaemon.consumer_class.should == ThreePartNameConsumer
+      expect(ThreePartNameDaemon.consumer_class).to eq(ThreePartNameConsumer)
     end
   end
 
   describe '##proc_name' do
     it 'should underscore class to get daemon name' do
       ThreePartNameDaemon = Class.new(DaemonObjects::Base)
-      ThreePartNameDaemon.proc_name.should == "three_part_name_daemon"
+      expect(ThreePartNameDaemon.proc_name).to eq("three_part_name_daemon")
     end
   end
 
@@ -135,7 +135,7 @@ describe DaemonObjects::Base do
 
     it 'should set environment' do
       DaemonObjects.environment = "theenv"
-      consumer.environment.should == "theenv"
+      expect(consumer.environment).to eq("theenv")
     end
 
     it 'should set app directory' do
@@ -143,14 +143,14 @@ describe DaemonObjects::Base do
         "thedir"
       end
 
-      consumer.app_directory.should == "thedir"
+      expect(consumer.app_directory).to eq("thedir")
     end
 
     it 'should set logger' do
       logger = MemoryLogger::Logger.new
-      MyDaemon.stub(:logger).and_return(logger)
+      allow(MyDaemon).to receive(:logger).and_return(logger)
 
-      consumer.logger.should == logger
+      expect(consumer.logger).to eq(logger)
     end
   end
 
@@ -177,7 +177,7 @@ describe DaemonObjects::Base do
       end
 
       bunny = double(Bunny).as_null_object
-      Bunny.should_receive(:new).with('amqp://localhost:4567').and_return(bunny)
+      expect(Bunny).to receive(:new).with('amqp://localhost:4567').and_return(bunny)
       MyDaemon.run
     end
 
@@ -185,7 +185,7 @@ describe DaemonObjects::Base do
       MyConsumer = Class.new(DaemonObjects::ConsumerBase)
       MyDaemon = Class.new(DaemonObjects::Base)
 
-      Bunny.should_not_receive(:new)
+      expect(Bunny).not_to receive(:new)
       MyDaemon.run
 
     end
@@ -199,23 +199,23 @@ describe DaemonObjects::Base do
       end
 
       bunny = double(Bunny).as_null_object
-      Bunny.stub(:new).and_return(bunny)
+      allow(Bunny).to receive(:new).and_return(bunny)
       channel = double(Bunny::Channel)
-      bunny.stub(:create_channel).and_return(channel)
-      channel.should_not_receive(:prefetch)
+      allow(bunny).to receive(:create_channel).and_return(channel)
+      expect(channel).not_to receive(:prefetch)
 
       worker  = MyWorker.new
       consumer = MyDaemon.get_consumer
-      MyDaemon.stub(:get_consumer).and_return(consumer)
+      allow(MyDaemon).to receive(:get_consumer).and_return(consumer)
 
-      MyWorker.should_receive(:new).
+      expect(MyWorker).to receive(:new).
         with(channel, consumer, {
               :queue_name => 'queue',
               :logger     => MyDaemon.logger,
               :arguments  => {}
         }).
         and_return(worker)
-      worker.should_receive(:start)
+      expect(worker).to receive(:start)
 
       MyDaemon.run
     end
@@ -230,24 +230,24 @@ describe DaemonObjects::Base do
       end
 
       bunny = double(Bunny).as_null_object
-      Bunny.stub(:new).and_return(bunny)
+      allow(Bunny).to receive(:new).and_return(bunny)
       channel = double(Bunny::Channel)
-      channel.should_receive(:prefetch).with(1)
+      expect(channel).to receive(:prefetch).with(1)
 
-      bunny.stub(:create_channel).and_return(channel)
+      allow(bunny).to receive(:create_channel).and_return(channel)
 
       worker  = MyWorker.new
       consumer = MyDaemon.get_consumer
-      MyDaemon.stub(:get_consumer).and_return(consumer)
+      allow(MyDaemon).to receive(:get_consumer).and_return(consumer)
 
-      MyWorker.should_receive(:new).
+      expect(MyWorker).to receive(:new).
         with(channel, consumer, {
               :queue_name => 'queue',
               :logger     => MyDaemon.logger,
               :arguments  => {}
         }).
         and_return(worker)
-      worker.should_receive(:start)
+      expect(worker).to receive(:start)
 
       MyDaemon.run
     end

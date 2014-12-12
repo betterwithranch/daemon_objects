@@ -13,7 +13,6 @@ Dir[File.join(SPEC_PATH, "support/**/*.rb")].each{|f| require f}
 FIXTURES_PATH = File.join(SPEC_PATH, "fixtures")
 
 RSpec.configure do |config|
-  config.treat_symbols_as_metadata_keys_with_true_values = true
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
 
