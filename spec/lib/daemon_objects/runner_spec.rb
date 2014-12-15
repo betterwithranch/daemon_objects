@@ -33,13 +33,13 @@ describe DaemonObjects::AmqpSupport do
 
     bunny = double(Bunny).as_null_object
     # First attempt should raise and retry
-    Bunny.should_receive(:new).
+    expect(Bunny).to receive(:new).
       with('amqp://localhost:4567'){
         raise Bunny::TCPConnectionFailed.new("could not connect", "localhost", 4567)
       }
 
     # Second attempt succeeds to exit spec
-    Bunny.should_receive(:new).
+    expect(Bunny).to receive(:new).
       with('amqp://localhost:4567').and_return(bunny)
     MyDaemon.run
   end
@@ -55,7 +55,7 @@ describe DaemonObjects::AmqpSupport do
       end
     end
 
-    Bunny.should_receive(:new).twice.
+    expect(Bunny).to receive(:new).twice.
       with('amqp://localhost:4567').and_return(bunny)
 
     MyDaemon.run

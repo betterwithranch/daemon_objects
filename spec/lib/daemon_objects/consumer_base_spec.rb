@@ -19,7 +19,7 @@ describe DaemonObjects::ConsumerBase do
       h = Harness.new(:logger => MemoryLogger::Logger.new)
       h.handle_message({:x => 1})
 
-      h.payloads_received.should == [{:x => 1}]
+      expect(h.payloads_received).to eq([{:x => 1}])
     end
   end
 
@@ -29,17 +29,17 @@ describe DaemonObjects::ConsumerBase do
 
     it 'should set logger' do
       h = harness.new(:logger => logger)
-      h.logger.should == logger
+      expect(h.logger).to eq(logger)
     end
 
     it 'should set app_directory' do
       h = harness.new(:app_directory => 'app_dir')
-      h.app_directory.should == 'app_dir'
+      expect(h.app_directory).to eq('app_dir')
     end
 
     it 'should set environment' do
       h = harness.new(:environment => 'environment')
-      h.environment.should == 'environment'
+      expect(h.environment).to eq('environment')
     end
   end
 
