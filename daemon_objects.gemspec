@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "daemons", "~> 1.1"
   spec.add_dependency "activesupport", "~> 4.1"
-  spec.add_dependency "bunny", "~> 1.1.0"
+  spec.add_dependency "bunny", "~> 2.3"
   spec.add_dependency "rake"
 
   spec.add_development_dependency "rspec", "~> 3.1"
