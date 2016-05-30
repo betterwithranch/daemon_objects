@@ -1,6 +1,6 @@
 # DaemonObjects
-[![Build Status](https://travis-ci.org/craigisrael/daemon_objects.png)](https://travis-ci.org/craigisrael/daemon_objects)
-[![Code Climate](https://codeclimate.com/github/craigisrael/daemon_objects.png)](https://codeclimate.com/github/craigisrael/daemon_objects)
+[![Build Status](https://travis-ci.org/betterwithranch/daemon_objects.png)]
+[![Code Climate](https://codeclimate.com/github/craigisrael/daemon_objects.png)]
 [![Gem Version](https://badge.fury.io/rb/daemon_objects.png)](http://badge.fury.io/rb/daemon_objects)
 
 Daemon Objects is designed to simplify using daemons in your ruby applications.  Under the hood, it uses the
