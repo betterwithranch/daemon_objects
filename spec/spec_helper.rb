@@ -6,6 +6,11 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'pry'
 require 'memory_logger'
+require 'bunny-mock'
+require 'rake'
+require File.join(File.dirname(__FILE__), "../lib/daemon_objects.rb")
+
+DaemonObjects.initialize_environment
 
 SPEC_PATH = File.dirname(__FILE__)
 Dir[File.join(SPEC_PATH, "support/**/*.rb")].each{|f| require f}
@@ -22,7 +27,3 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = 'random'
 end
-
-require 'rake'
-require File.join(File.dirname(__FILE__), "../lib/daemon_objects.rb")
-DaemonObjects.initialize_environment

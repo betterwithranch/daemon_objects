@@ -4,7 +4,7 @@ class DaemonObjects::Base
   extend DaemonObjects::Logging
 
   def self.consumes_amqp(opts={})
-    extend DaemonObjects::AmqpSupport
+    extend DaemonObjects::Amqp::Runner
     self.endpoint                   = opts.delete(:endpoint)
     self.queue                      = opts.delete(:queue_name)
     self.arguments["x-message-ttl"] = opts.delete(:ttl) if opts[:ttl]

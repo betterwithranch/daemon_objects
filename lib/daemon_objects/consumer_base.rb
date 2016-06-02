@@ -22,12 +22,12 @@ class DaemonObjects::ConsumerBase
     logger.info("Handling message #{payload}")
     response = handle_message_impl(payload)
     logger.info("Completed handling message")
-    response
+    { success: true, response: response }
   rescue StandardError => e
     logger.error("#{e.class}:  #{e.message}")
     logger.error(e.backtrace.join("\n"))
     Airbrake.notify(e) if defined?(Airbrake)
-    e
+    { success: false, error: e }
   end
 
   def self.handle_messages_with(&block)
@@ -36,4 +36,5 @@ class DaemonObjects::ConsumerBase
   end
 
   add_transaction_tracer :handle_message, :category => :task if defined?(::NewRelic)
+
 end

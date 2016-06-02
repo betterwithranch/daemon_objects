@@ -30,7 +30,7 @@ class DaemonObjects::Amqp::Worker
     queue = channel.queue(queue_name, :durable => true, :arguments => arguments)
     queue.bind(exchange, :routing_key => routing_key) if exchange
 
-    queue.subscribe(:block => true, :ack => true) do |delivery_info, properties, payload|
+    queue.subscribe(:block => true, :manual_ack => true) do |delivery_info, properties, payload|
       exception = handle_message(channel, delivery_info.delivery_tag, payload)
 
       response_payload = consumer.get_response(payload, exception) if consumer.respond_to?(:get_response)
@@ -47,12 +47,13 @@ class DaemonObjects::Amqp::Worker
   end
 
   def handle_message(channel, delivery_tag, payload)
-    response = consumer.handle_message (payload)
+    result = consumer.handle_message (payload)
+    raise result[:error] || StandardError.new("Message handling failed.  No additional details provided") unless result[:success]
+
     channel.acknowledge(delivery_tag, true)
-    response
+    result[:response]
   rescue Exception => e
     channel.reject(delivery_tag)
     logger.error "Error occurred handling message, the payload was: #{payload}, the error was: '#{e}'."
-    e
   end
 end

@@ -1,4 +1,4 @@
-module DaemonObjects::AmqpSupport
+module DaemonObjects::Amqp::Runner
   attr_accessor :endpoint, :queue, :prefetch, :worker_class,
     :retry_wait_time
 

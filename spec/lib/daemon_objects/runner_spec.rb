@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DaemonObjects::AmqpSupport do
+describe DaemonObjects::Amqp::Runner do
   before :each do
     MyWorker = Class.new(DaemonObjects::Amqp::Worker) do
       def initialize(*args); end
