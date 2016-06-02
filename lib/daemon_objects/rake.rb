@@ -1,4 +1,5 @@
-require_relative 'loader'
+require 'loader' unless Object.const_defined?(:DaemonObjects)
+
 namespace :daemon do
 
   # create tasks for each daemon to start/stop/restart/run
