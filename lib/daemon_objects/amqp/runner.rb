@@ -25,7 +25,11 @@ module DaemonObjects::Amqp::Runner
     logger.info "Starting up the AMQP watcher."
 
     channel  = connection.create_channel
-    channel.prefetch(1) if prefetch
+
+    # handle legacy boolean behavior
+    self.prefetch = 1 if prefetch == true
+
+    channel.prefetch(prefetch) if prefetch
 
     worker   = worker_class.new(
       channel, 
