@@ -44,4 +44,8 @@ namespace :daemon do
     task :restart => [:stop, :start]
   end
 
+  task :list do
+    DaemonObjects.daemons.each {|d| puts d }
+  end
+
 end
