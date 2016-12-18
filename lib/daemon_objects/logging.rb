@@ -12,9 +12,13 @@ module DaemonObjects::Logging
     @logger ||= create_logger
   end
 
+  def log_path
+    File.join(log_directory, log_filename)
+  end
+
   def create_logger
     FileUtils.mkdir_p log_directory
-    logger = ::Logger.new(File.open(File.join(log_directory, log_filename), "a"))
+    logger = ::Logger.new(log_path)
     logger.formatter = ::Logger::Formatter.new
     logger
   end
@@ -24,6 +28,7 @@ module DaemonObjects::Logging
   end
 
   def force_logger_reset
+    @logger.close
     @logger = nil
     Rails.logger = logger if defined?(Rails)
   end
