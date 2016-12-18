@@ -29,5 +29,6 @@ RSpec.configure do |config|
 
   config.before :each do
     DaemonObjects.initialize_environment
+    DaemonObjects.instance_variable_set(:@config, nil)
   end
 end

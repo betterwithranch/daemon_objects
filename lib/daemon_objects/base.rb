@@ -112,6 +112,6 @@ class DaemonObjects::Base
   def self.handle_error(e)
     logger.error(e.message)
     logger.error(e.backtrace.join("\n"))
-    Airbrake.notify(e) if defined?(Airbrake)
+    DaemonObjects.config.handle_error(e)
   end
 end

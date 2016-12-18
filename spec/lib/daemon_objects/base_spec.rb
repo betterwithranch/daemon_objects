@@ -291,6 +291,15 @@ describe DaemonObjects::Base do
     end
   end
 
+  describe '#handle_error' do
+    it 'calls the configured error handler' do
+      MyDaemon = Class.new(DaemonObjects::Base)
+      err = StandardError.new("test message")
+      err.set_backtrace(caller)
+
+      expect(DaemonObjects.config).to receive(:handle_error).with(err)
+      MyDaemon.handle_error(err)
+    end
+  end
+
 end
-
-

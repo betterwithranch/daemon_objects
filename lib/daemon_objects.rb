@@ -4,13 +4,22 @@ require 'yaml'
 require 'daemons'
 require 'logger'
 require 'bunny'
+require 'daemon_objects/configuration'
 
-module DaemonObjects;
+module DaemonObjects
   class << self
     attr_accessor :environment
 
     def initialize_environment
       @environment = (defined? Rails) ? Rails.env : (ENV["DAEMON_ENV"] || "development")
+    end
+
+    def configure
+      yield config
+    end
+
+    def config
+      @config ||= DaemonObjects::Configuration.new
     end
   end
 end

@@ -15,6 +15,16 @@ describe DaemonObjects do
     end
   end
 
+  describe '#configure' do
+    it 'configures error handler' do
+      error_handler = Proc.new {}
+      DaemonObjects.configure do |c|
+        c.error_handler = error_handler
+      end
+      expect(DaemonObjects.config.error_handler).to eq(error_handler)
+    end
+  end
+
   describe '#environment' do
     before :each do
       DaemonObjects.initialize_environment

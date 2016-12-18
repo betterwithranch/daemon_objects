@@ -21,6 +21,17 @@ describe DaemonObjects::ConsumerBase do
 
       expect(h.payloads_received).to eq([{:x => 1}])
     end
+
+    it 'calls the configured error handler on error' do
+      err = StandardError.new("test message")
+      Harness = Class.new(DaemonObjects::ConsumerBase) do
+        handle_messages_with{|p| raise err }
+      end
+
+      expect(DaemonObjects.config).to receive(:handle_error).with(err)
+      h = Harness.new(:logger => MemoryLogger::Logger.new)
+      h.handle_message({x: 1})
+    end
   end
 
   describe '#initialize' do

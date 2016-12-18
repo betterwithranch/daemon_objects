@@ -26,7 +26,7 @@ class DaemonObjects::ConsumerBase
   rescue StandardError => e
     logger.error("#{e.class}:  #{e.message}")
     logger.error(e.backtrace.join("\n"))
-    Airbrake.notify(e) if defined?(Airbrake)
+    DaemonObjects.config.handle_error(e)
     { success: false, error: e }
   end
 
