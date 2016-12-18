@@ -14,7 +14,7 @@ module DaemonObjects::Logging
 
   def create_logger
     FileUtils.mkdir_p log_directory
-    logger = ::Logger.new(File.join(log_directory, log_filename))
+    logger = ::Logger.new(File.open(File.join(log_directory, log_filename), "a"))
     logger.formatter = ::Logger::Formatter.new
     logger
   end

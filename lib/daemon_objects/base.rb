@@ -79,7 +79,8 @@ class DaemonObjects::Base
 
   def self.start
     logger.info "Starting #{instances} instances"
-    instances.times do
+
+    1.times do
       # connection will get severed on fork, so disconnect first
       ActiveRecord::Base.connection.disconnect! if defined?(ActiveRecord::Base)
 
@@ -87,16 +88,20 @@ class DaemonObjects::Base
 
       Daemons.run_proc(proc_name,
                        :ARGV       => ["start", "-f"],
-                       :log_dir    => "/tmp",
+                       :log_dir    => log_directory,
                        :dir        => pid_directory,
                        :log_output => true,
-                       :multiple   => true) do
+                       :output_logfilename => log_filename,
+                       :multiple   => true
+                       ) do
                          after_fork
                          run
                        end
     end
 
   rescue StandardError => e
+    puts e.message
+    puts e.backtrace.join("\n")
     handle_error(e)
   end
 
