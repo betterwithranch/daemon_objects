@@ -81,7 +81,7 @@ describe DaemonObjects::Base do
              { :ARGV       => ['start', '-f'],
                :log_dir    => "/tmp",
                :dir        => MyDaemon.pid_directory,
-               :log_output => true,
+               :log_output => false,
                :multiple   => true
               } )
       MyDaemon.start
