@@ -117,6 +117,18 @@ this will be created in the log directory of your application.
 
 If the daemon does not have access to create the log, it will log errors to /tmp/_daemon_name_.output.
 
+### Configuration
+
+Configuration is done by creating a config/daemons.yml file.  Configuration is optional.
+
+    Example config:
+
+    development:
+      my_test:
+        count: 2
+
+This will start 2 instances of the `MyTestDaemon` class.
+
 ### Support for third-party libraries
 
 DaemonObjects supports the following third-party libraries.  If they are required in your application, your daemon will use them.

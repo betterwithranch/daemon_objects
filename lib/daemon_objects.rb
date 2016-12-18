@@ -1,5 +1,6 @@
 require "daemon_objects/version"
 require 'active_support/core_ext/string'
+require 'yaml'
 require 'daemons'
 require 'logger'
 require 'bunny'

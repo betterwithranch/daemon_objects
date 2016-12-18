@@ -3,6 +3,25 @@ require 'daemon_objects/logging'
 class DaemonObjects::Base
   extend DaemonObjects::Logging
 
+  class << self
+    attr_accessor :description
+  end
+
+  def self.config_file_name
+    @config_file_name || "daemons.yml"
+  end
+
+  def self.instances
+    path = File.join(app_directory, "config", config_file_name)
+
+    if File.exist?(path)
+      config = YAML.load_file(path)[DaemonObjects.environment]
+      daemon_config = config[class_root.underscore] if config
+      instances = daemon_config["count"] if daemon_config
+    end
+    instances ||= 1
+  end
+
   def self.consumes_amqp(opts={})
     extend DaemonObjects::Amqp::Runner
     self.endpoint                   = opts.delete(:endpoint)
@@ -22,11 +41,15 @@ class DaemonObjects::Base
   end
 
   def self.pid_directory
-    File.join(app_directory, "tmp/pids")
+    File.join(app_directory, "tmp/pids/daemon_objects")
+  end
+
+  def self.class_root
+    self.to_s.gsub("Daemon", "")
   end
 
   def self.consumer_class
-    @consumer_class ||= "#{self.to_s.gsub("Daemon", "")}Consumer".constantize
+    @consumer_class ||= "#{class_root}Consumer".constantize
   end
 
   def self.proc_name
@@ -55,19 +78,22 @@ class DaemonObjects::Base
   end
 
   def self.start
-    # connection will get severed on fork, so disconnect first
-    ActiveRecord::Base.connection.disconnect! if defined?(ActiveRecord::Base)
+    logger.info "Starting #{instances} instances"
+    instances.times do
+      # connection will get severed on fork, so disconnect first
+      ActiveRecord::Base.connection.disconnect! if defined?(ActiveRecord::Base)
 
-    FileUtils.mkdir_p(pid_directory)
+      FileUtils.mkdir_p(pid_directory)
 
-    Daemons.run_proc(proc_name,
-                    { :ARGV       => ["start", "-f"],
-                      :log_dir    => "/tmp",
-                      :dir        => pid_directory,
-                      :log_output => true}) do
-
-      after_fork
-      run
+      Daemons.run_proc(proc_name,
+                       :ARGV       => ["start", "-f"],
+                       :log_dir    => "/tmp",
+                       :dir        => pid_directory,
+                       :log_output => true,
+                       :multiple   => true) do
+                         after_fork
+                         run
+                       end
     end
 
   rescue StandardError => e

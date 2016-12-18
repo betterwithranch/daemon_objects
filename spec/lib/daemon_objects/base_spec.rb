@@ -2,11 +2,21 @@ require 'spec_helper'
 
 describe DaemonObjects::Base do
   after :each do
-    [ :MyDaemon, :ThreePartNameDaemon, :MyConsumer].each do |sym|
+    [ :MyDaemon, :MyTestDaemon, :ThreePartNameDaemon, :MyConsumer].each do |sym|
       Object.send(:remove_const, sym) if Object.const_defined?(sym)
     end
   end
 
+  describe '##description' do
+    it 'sets the description for the daemon' do
+      MyDaemon = Class.new(DaemonObjects::Base) do
+        self.description = "My daemon description"
+      end
+
+      expect(MyDaemon.description).to eq("My daemon description")
+    end
+
+  end
   describe '#app_directory' do
     it 'should be Rake.original_directory if Rails is not defined' do
       allow(Rake).to receive(:original_dir).and_return("/mydir")
@@ -71,7 +81,8 @@ describe DaemonObjects::Base do
              { :ARGV       => ['start', '-f'],
                :log_dir    => "/tmp",
                :dir        => MyDaemon.pid_directory,
-               :log_output => true
+               :log_output => true,
+               :multiple   => true
               } )
       MyDaemon.start
     end
@@ -85,6 +96,33 @@ describe DaemonObjects::Base do
              { :ARGV => ['stop', '-f'],
               :dir   => MyDaemon.pid_directory})
       MyDaemon.stop
+    end
+  end
+
+  describe '#instances' do
+    let(:daemon) { MyTestDaemon = Class.new(DaemonObjects::Base) }
+
+    before :each do
+      allow(daemon).to receive(:app_directory).and_return("spec/fixtures")
+    end
+
+    it 'defaults to 1' do
+      expect(daemon.instances).to eq(1)
+    end
+
+    it 'matches the file value when found' do
+      allow(daemon).to receive(:config_file_name).and_return("with_count.yml")
+      expect(daemon.instances).to eq(4)
+    end
+
+    it 'is 1 when file does not match env' do
+      allow(daemon).to receive(:config_file_name).and_return("no_env.yml")
+      expect(daemon.instances).to eq(1)
+    end
+
+    it 'is 1 when file matches env, but not daemon' do
+      allow(daemon).to receive(:config_file_name).and_return("no_daemon.yml")
+      expect(daemon.instances).to eq(1)
     end
   end
 

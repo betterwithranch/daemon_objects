@@ -45,7 +45,9 @@ namespace :daemon do
   end
 
   task :list do
-    DaemonObjects.daemons.each {|d| puts d }
+    puts ""
+    DaemonObjects.daemons.each { |d| puts d }
+    puts ""
   end
 
 end
