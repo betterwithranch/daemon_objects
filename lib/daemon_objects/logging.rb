@@ -17,10 +17,14 @@ module DaemonObjects::Logging
   end
 
   def create_logger
-    FileUtils.mkdir_p log_directory
-    logger = ::Logger.new(log_path)
-    logger.formatter = ::Logger::Formatter.new
-    logger
+    if DaemonObjects.config.log_to_stdout
+      logger = ::Logger.new(STDOUT)
+    else
+      FileUtils.mkdir_p log_directory
+      logger = ::Logger.new(log_path)
+      logger.formatter = ::Logger::Formatter.new
+      logger
+    end
   end
 
   def logger=(value)
